@@ -1,3 +1,11 @@
+2011-03-15  Cedric Girard <girard.cedric@gmail.com>
+
+	* src/pidgin-libnotify.c: patch from
+	https://bugs.launchpad.net/ubuntu/+source/pidgin-libnotify/+bug/577622
+	for IRC notifications
+	* po/*.po: language patch from archlinux :
+	http://projects.archlinux.org/svntogit/community.git/tree/pidgin-libnotify/repos/community-testing-x86_64/language_fixes.patch
+
 2008-12-14  Duarte Henriques <duarte.henriques@gmail.com>
 
 	* src/gaim-libnotify.c: really show option to not show
