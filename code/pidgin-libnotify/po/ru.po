@@ -7,11 +7,11 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gaim-libnotify\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2007-06-30 19:58+0000\n"
+"POT-Creation-Date: 2009-08-07 18:45+0000\n"
 "PO-Revision-Date: 2007-11-29 12:30-0300\n"
 "Last-Translator: Dmitry Egorkin <egorkin@gmail.com>\n"
 "Language-Team: Russian\n"
-"MIME-Version: 1.0\n"
+"MIME-Version: 1.1\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
@@ -43,12 +43,12 @@ msgstr "Показать"
 #: src/pidgin-libnotify.c:347
 #, c-format
 msgid "%s signed on"
-msgstr "%s пришёл"
+msgstr "%s в сети"
 
 #: src/pidgin-libnotify.c:379
 #, c-format
 msgid "%s signed off"
-msgstr "%s ушёл"
+msgstr "%s не в сети"
 
 #: src/pidgin-libnotify.c:406
 #, c-format
@@ -73,3 +73,5 @@ msgstr ""
 
 #~ msgid "Libnotify Interface"
 #~ msgstr "Настройки libnotify"
+
+ 	  	 

@@ -8,69 +8,66 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ro\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2007-06-30 19:58+0000\n"
-"PO-Revision-Date: 2007-01-25 22:00+0200\n"
-"Last-Translator: Ion Alin <alyn3d@gmail.com>\n"
-"Language-Team:  <ro@li.org>\n"
+"POT-Creation-Date: 2009-04-24 10:15+0000\n"
+"PO-Revision-Date: 2009-09-10 13:40+0000\n"
+"Last-Translator: Adi Roiban <adi@roiban.ro>\n"
+"Language-Team: <ro@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: KBabel 1.11.4\n"
-"Plural-Forms:  nplurals=3; plural=n==1 ? 0 : (n==0 || (n%100 > 0 && n%100 < "
-"20)) ? 1 : 2;\n"
+"X-Launchpad-Export-Date: 2009-09-10 16:28+0000\n"
+"X-Generator: Launchpad (build Unknown)\n"
 
-#: src/pidgin-libnotify.c:57
+#: ../src/pidgin-libnotify.c:75
 msgid "New messages"
 msgstr "Mesaje noi"
 
-#: src/pidgin-libnotify.c:62
+#: ../src/pidgin-libnotify.c:80
 msgid "Only new conversations"
-msgstr "Numai conversatii noi"
+msgstr "Doar conversațiile noi"
 
-#: src/pidgin-libnotify.c:67
+#: ../src/pidgin-libnotify.c:85
 msgid "Ignore events from blocked users"
-msgstr "Ignora evenimentele de la utilizatorii blocati"
+msgstr "Ignoră evenimentele de la utilizatorii blocați"
 
-#: src/pidgin-libnotify.c:72
+#: ../src/pidgin-libnotify.c:90
 msgid "Buddy signs on"
-msgstr "Userul este online"
+msgstr "Contact conectat"
 
-#: src/pidgin-libnotify.c:77
+#: ../src/pidgin-libnotify.c:95
 msgid "Buddy signs off"
-msgstr "Userul este offline"
+msgstr "Contact deconectat"
 
-#: src/pidgin-libnotify.c:315
+#: ../src/pidgin-libnotify.c:100
+msgid "Only when available"
+msgstr "Doar când sunt disponibil(ă)"
+
+#: ../src/pidgin-libnotify.c:454
 msgid "Show"
-msgstr "Arata"
+msgstr "Afișează"
 
-#: src/pidgin-libnotify.c:347
-#, c-format
-msgid "%s signed on"
-msgstr "%s este online"
+#: ../src/pidgin-libnotify.c:487
+msgid "is online"
+msgstr "s-a conectat"
 
-#: src/pidgin-libnotify.c:379
-#, c-format
-msgid "%s signed off"
-msgstr "%s este offline"
+#: ../src/pidgin-libnotify.c:516
+msgid "is offline"
+msgstr "s-a deconectat"
 
-#: src/pidgin-libnotify.c:406
-#, c-format
-msgid "%s says:"
-msgstr "%s spune:"
-
-#: src/pidgin-libnotify.c:572
+#: ../src/pidgin-libnotify.c:1200
 msgid "Libnotify Popups"
-msgstr "Pop-up Libnotify"
+msgstr "Notificări libnotify"
 
-#: src/pidgin-libnotify.c:573
+#: ../src/pidgin-libnotify.c:1201
 msgid "Displays popups via libnotify."
-msgstr "Arata popup-uri via libnotify."
+msgstr "Afișează notificări via libnotify."
 
-#: src/pidgin-libnotify.c:574
-#, fuzzy
+#: ../src/pidgin-libnotify.c:1202
 msgid ""
 "Pidgin-libnotify:\n"
 "Displays popups via libnotify."
 msgstr ""
-"Gaim-libnotify:\n"
-"Arata popup-uri via libnotify."
+"Pidgin-libnotify:\n"
+"Afișează notificări via libnotify."
+
+ 	  	 

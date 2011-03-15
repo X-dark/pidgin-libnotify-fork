@@ -31,12 +31,12 @@ msgstr "Negeer gebeurtenissen van geblokkeerde gebruikers"
 
 #: src/pidgin-libnotify.c:72
 msgid "Buddy signs on"
-msgstr "Contactpersoon heeft zich aangemeld"
+msgstr "Contactpersoon meldt zich aan"
 
 #: src/pidgin-libnotify.c:77
 #, fuzzy
 msgid "Buddy signs off"
-msgstr "Contactpersoon heeft zich aangemeld"
+msgstr "Contactpersoon meldt zich af"
 
 #: src/pidgin-libnotify.c:315
 msgid "Show"
@@ -50,7 +50,7 @@ msgstr "%s heeft zich aangemeld"
 #: src/pidgin-libnotify.c:379
 #, fuzzy, c-format
 msgid "%s signed off"
-msgstr "%s heeft zich aangemeld"
+msgstr "%s heeft zich afgemeld"
 
 #: src/pidgin-libnotify.c:406
 #, c-format
@@ -59,7 +59,7 @@ msgstr "%s zegt:"
 
 #: src/pidgin-libnotify.c:572
 msgid "Libnotify Popups"
-msgstr ""
+msgstr "Libnotify Popups"
 
 #: src/pidgin-libnotify.c:573
 msgid "Displays popups via libnotify."
@@ -71,7 +71,7 @@ msgid ""
 "Pidgin-libnotify:\n"
 "Displays popups via libnotify."
 msgstr ""
-"Gaim-libnotify:\n"
+"Pidgin-libnotify:\n"
 "Toont popups via libnotify."
 
 #~ msgid "Libnotify Interface"
