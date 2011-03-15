@@ -3,7 +3,7 @@
 # gaim-encryption configure script, thanks guys ;)
 #
 
-AC_INIT([pidgin-libnotify], [0.14], [nothing])
+AC_INIT([pidgin-libnotify], [0.19], [nothing])
 AC_CANONICAL_SYSTEM
 AM_CONFIG_HEADER(config.h)
 
