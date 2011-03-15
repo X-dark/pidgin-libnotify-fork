@@ -42,6 +42,8 @@
 
 #define PLUGIN_ID "pidgin-libnotify"
 
+#define KEY "notification_key"
+
 static GHashTable *buddy_hash;
 
 static PurplePluginPrefFrame *
@@ -60,6 +62,11 @@ get_plugin_pref_frame (PurplePlugin *plugin)
 	ppref = purple_plugin_pref_new_with_name_and_label (
                             "/plugins/gtk/libnotify/newconvonly",
                             _("Only new conversations"));
+	purple_plugin_pref_frame_add (frame, ppref);
+
+	ppref = purple_plugin_pref_new_with_name_and_label (
+                            "/plugins/gtk/libnotify/all_chat_msgs",
+                            _("All messages in chats"));
 	purple_plugin_pref_frame_add (frame, ppref);
 
 	ppref = purple_plugin_pref_new_with_name_and_label (
@@ -169,6 +176,26 @@ pixbuf_from_buddy_icon (PurpleBuddyIcon *buddy_icon)
 	return icon;
 }
 
+
+/** Return a pixbuf describing the buddy. It should be unref'd. */
+static GdkPixbuf *
+pixbuf_from_buddy(const PurpleBuddy *buddy)
+{
+	GdkPixbuf *icon;
+    PurpleBuddyIcon *buddy_icon;
+
+    buddy_icon = purple_buddy_get_icon (buddy);
+	if (buddy_icon) {
+	    icon = pixbuf_from_buddy_icon (buddy_icon);
+	    purple_debug_info (PLUGIN_ID, "pixbuf_from_buddy(), icon from buddy\n");
+    } else {
+    	icon = pidgin_create_prpl_icon (buddy->account, 1);
+	    purple_debug_info (PLUGIN_ID, "pixbuf_from_buddy(), icon from account\n");
+   	}
+
+    return icon;
+}
+
 static void
 action_cb (NotifyNotification *notification,
 		   gchar *action, gpointer user_data)
@@ -201,13 +228,16 @@ action_cb (NotifyNotification *notification,
 static gboolean
 closed_cb (NotifyNotification *notification)
 {
-	PurpleContact *contact;
+	gpointer notification_key;
 
-	purple_debug_info (PLUGIN_ID, "closed_cb(), notification: 0x%x\n", notification);
+	notification_key = (gpointer)g_object_get_data (G_OBJECT(notification), KEY);
 
-	contact = (PurpleContact *)g_object_get_data (G_OBJECT(notification), "contact");
-	if (contact)
-		g_hash_table_remove (buddy_hash, contact);
+	purple_debug_info (PLUGIN_ID, "closed_cb(), notification: 0x%x  "
+            "key: 0x%x\n", notification, notification_key
+    );
+
+	if (notification_key)
+		g_hash_table_remove (buddy_hash, notification_key);
 
 	g_object_unref (G_OBJECT(notification));
 
@@ -255,69 +285,77 @@ should_notify_unavailable (PurpleAccount *account)
 }
 
 static void
-notify (const gchar *title,
+notify (const GdkPixbuf *icon, 
+        const gchar *title,
 		const gchar *body,
-		PurpleBuddy *buddy)
+		PurpleBuddy *buddy,
+        gpointer notification_key)
 {
 	NotifyNotification *notification = NULL;
-	GdkPixbuf *icon;
-	PurpleBuddyIcon *buddy_icon;
-	gchar *tr_body;
+	gchar *tr_body, *buddy_name;
 	PurpleContact *contact;
-
-	contact = purple_buddy_get_contact (buddy);
 
 	if (body)
 		tr_body = truncate_escape_string (body, 60);
 	else
 		tr_body = NULL;
 
-	notification = g_hash_table_lookup (buddy_hash, contact);
+    if (buddy) {
+    	contact = purple_buddy_get_contact (buddy);
+        buddy_name = best_name (buddy);
 
-	if (notification != NULL) {
+    } else {
+        contact = NULL;
+        buddy_name = "(not-set)";
+    }
+
+
+	notification = g_hash_table_lookup (buddy_hash, notification_key);
+
+    if (notification != NULL) {
+	    purple_debug_info (PLUGIN_ID, "notify(), updating 0x%x: " 
+                "title: '%s', body: '%s', buddy: '%s'\n", notification_key, title, tr_body, buddy_name);
+
 		notify_notification_update (notification, title, tr_body, NULL);
-		/* this shouldn't be necessary, file a bug */
-		notify_notification_show (notification, NULL);
+	    /* this shouldn't be necessary, file a bug */
+    	notify_notification_show (notification, NULL);
 
 		purple_debug_info (PLUGIN_ID, "notify(), update: "
-						 "title: '%s', body: '%s', buddy: '%s'\n",
-						 title, tr_body, best_name (buddy));
+	    				 "title: '%s', body: '%s', buddy: '%s'\n",
+		    			 title, tr_body, buddy_name);
 
-		g_free (tr_body);
+	    g_free (tr_body);
 		return;
-	}
+    }
+
+
 	notification = notify_notification_new (title, tr_body, NULL, NULL);
-	purple_debug_info (PLUGIN_ID, "notify(), new: "
+	purple_debug_info (PLUGIN_ID, "notify(), new 0x%x: "
 					 "title: '%s', body: '%s', buddy: '%s'\n",
-					 title, tr_body, best_name (buddy));
+					 notification_key, title, tr_body, buddy_name);
 
 	g_free (tr_body);
 
-	buddy_icon = purple_buddy_get_icon (buddy);
-	if (buddy_icon) {
-		icon = pixbuf_from_buddy_icon (buddy_icon);
-		purple_debug_info (PLUGIN_ID, "notify(), has a buddy icon.\n");
-	} else {
-		icon = pidgin_create_prpl_icon (buddy->account, 1);
-		purple_debug_info (PLUGIN_ID, "notify(), has a prpl icon.\n");
-	}
-
 	if (icon) {
 		notify_notification_set_icon_from_pixbuf (notification, icon);
-		g_object_unref (icon);
 	} else {
-		purple_debug_warning (PLUGIN_ID, "notify(), couldn't find any icon!\n");
+		purple_debug_warning (PLUGIN_ID, "notify(), didn't get an icon!\n");
 	}
 
-	g_hash_table_insert (buddy_hash, contact, notification);
+    if (body) 
+        notify_notification_set_category (notification, "im.received");
+    else
+        notify_notification_set_category (notification, "im");
 
-	g_object_set_data (G_OBJECT(notification), "contact", contact);
+    g_hash_table_insert (buddy_hash, notification_key, notification);
+
+    g_object_set_data (G_OBJECT(notification), KEY, notification_key);
 
 	g_signal_connect (notification, "closed", G_CALLBACK(closed_cb), NULL);
 
 	notify_notification_set_urgency (notification, NOTIFY_URGENCY_NORMAL);
 
-	notify_notification_add_action (notification, "show", _("Show"), action_cb, NULL, NULL);
+//	notify_notification_add_action (notification, "show", _("Show"), action_cb, NULL, NULL);
 
 	if (!notify_notification_show (notification, NULL)) {
 		purple_debug_error (PLUGIN_ID, "notify(), failed to send notification\n");
@@ -329,6 +367,7 @@ static void
 notify_buddy_signon_cb (PurpleBuddy *buddy,
 						gpointer data)
 {
+    GdkPixbuf *icon;
 	gchar *tr_name, *title;
 	gboolean blocked;
 
@@ -351,8 +390,11 @@ notify_buddy_signon_cb (PurpleBuddy *buddy,
 
 	title = g_strdup_printf (_("%s signed on"), tr_name);
 
-	notify (title, NULL, buddy);
+    icon = pixbuf_from_buddy (buddy);
 
+	notify (icon, title, NULL, buddy, buddy);
+
+	g_object_unref (icon);
 	g_free (tr_name);
 	g_free (title);
 }
@@ -361,6 +403,7 @@ static void
 notify_buddy_signoff_cb (PurpleBuddy *buddy,
 						 gpointer data)
 {
+    GdkPixbuf *icon;
 	gchar *tr_name, *title;
 	gboolean blocked;
 
@@ -383,8 +426,11 @@ notify_buddy_signoff_cb (PurpleBuddy *buddy,
 
 	title = g_strdup_printf (_("%s signed off"), tr_name);
 
-	notify (title, NULL, buddy);
+    icon = pixbuf_from_buddy (buddy);
 
+	notify (icon, title, NULL, buddy, buddy);
+
+	g_object_unref (icon);
 	g_free (tr_name);
 	g_free (title);
 }
@@ -395,6 +441,7 @@ notify_msg_sent (PurpleAccount *account,
 				 const gchar *message)
 {
 	PurpleBuddy *buddy;
+    GdkPixbuf *icon;
 	gchar *title, *body, *tr_name;
 	gboolean blocked;
 
@@ -411,8 +458,11 @@ notify_msg_sent (PurpleAccount *account,
 	title = g_strdup_printf (_("%s says:"), tr_name);
 	body = purple_markup_strip_html (message);
 
-	notify (title, body, buddy);
+    icon = pixbuf_from_buddy (buddy);
 
+	notify (icon, title, body, buddy, buddy);
+
+	g_object_unref (icon);
 	g_free (tr_name);
 	g_free (title);
 	g_free (body);
@@ -457,16 +507,38 @@ notify_chat_nick (PurpleAccount *account,
 				  PurpleConversation *conv,
 				  gpointer data)
 {
-	gchar *nick;
+    GdkPixbuf *icon;
+    PurpleBuddy *buddy;
+	gchar *nick, *tr_name, *title, *body;
 
 	nick = (gchar *)purple_conv_chat_get_nick (PURPLE_CONV_CHAT(conv));
 	if (nick && !strcmp (sender, nick))
 		return;
 
-	if (!g_strstr_len (message, strlen(message), nick))
+	if (!purple_prefs_get_bool ("/plugins/gtk/libnotify/all_chat_msgs") 
+            && !g_strstr_len (message, strlen(message), nick))
 		return;
 
-	notify_msg_sent (account, sender, message);
+	tr_name = truncate_escape_string (sender, 25);
+
+	title = g_strdup_printf (_("%s says:"), tr_name);
+	body = purple_markup_strip_html (message);
+
+	buddy = purple_find_buddy (account, sender);
+	if (buddy) 
+        icon = pixbuf_from_buddy (buddy);
+    else 
+        icon = NULL;
+    
+    if (!icon)
+        icon = pidgin_create_prpl_icon (account, PIDGIN_PRPL_ICON_MEDIUM);
+
+	notify (icon, title, body, NULL, conv);
+
+	g_object_unref (icon);
+	g_free (tr_name);
+	g_free (title);
+	g_free (body);
 }
 
 static gboolean
@@ -585,6 +657,7 @@ init_plugin (PurplePlugin *plugin)
 	purple_prefs_add_bool ("/plugins/gtk/libnotify/signon", TRUE);
 	purple_prefs_add_bool ("/plugins/gtk/libnotify/signoff", FALSE);
 	purple_prefs_add_bool ("/plugins/gtk/libnotify/only_available", FALSE);
+	purple_prefs_add_bool ("/plugins/gtk/libnotify/all_chat_msgs", FALSE);
 }
 
 PURPLE_INIT_PLUGIN(notify, init_plugin, info)
