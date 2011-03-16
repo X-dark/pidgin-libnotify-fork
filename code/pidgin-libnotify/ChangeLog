@@ -1,4 +1,8 @@
 2011-03-15  Cedric Girard <girard.cedric@gmail.com>
+	* src/pidgin-libnotify.c: patch from
+	http://projects.archlinux.org/svntogit/community.git/plain/pidgin-libnotify/repos/community-x86_64/pidgin-libnotify-0.14-libnotify-0.7.patch
+	to add compatibility with libnotify 0.7
+2011-03-15  Cedric Girard <girard.cedric@gmail.com>
 
 	* src/pidgin-libnotify.c: patch from
 	https://bugs.launchpad.net/ubuntu/+source/pidgin-libnotify/+bug/577622

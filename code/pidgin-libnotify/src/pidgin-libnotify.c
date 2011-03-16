@@ -329,7 +329,15 @@ notify (const GdkPixbuf *icon,
     }
 
 
+#ifdef NOTIFY_CHECK_VERSION
+#if NOTIFY_CHECK_VERSION (0, 7, 0)
+	notification = notify_notification_new (title, tr_body, NULL);
+#else
+ 	notification = notify_notification_new (title, tr_body, NULL, NULL);
+#endif
+#else
 	notification = notify_notification_new (title, tr_body, NULL, NULL);
+#endif
 	purple_debug_info (PLUGIN_ID, "notify(), new 0x%x: "
 					 "title: '%s', body: '%s', buddy: '%s'\n",
 					 notification_key, title, tr_body, buddy_name);
