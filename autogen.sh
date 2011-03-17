@@ -44,13 +44,13 @@ echo "Running libtoolize, please ignore non-fatal messages...."
 echo n | libtoolize --copy --force || exit;
 echo;
 
+echo "Running intltoolize...."
+echo n | intltoolize --copy --force || exit;
+echo;
+
 aclocal || exit;
 autoheader || exit;
 automake --add-missing --copy;
 autoconf || exit;
 automake || exit;
-
-echo "Running ./configure $@"
-echo;
-./configure $@
 
